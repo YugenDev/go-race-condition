@@ -2,7 +2,7 @@
 
 ### Problema de Condición de Carrera
 
-En programación concurrente, una condición de carrera (race condition) ocurre cuando varias goroutines (hilos ligeros) acceden y modifican simultáneamente una variable compartida sin la sincronización adecuada. Esto puede llevar a resultados inesperados e incorrectos.
+En programación concurrente, una condición de carrera (race condition) ocurre cuando varias goroutines acceden y modifican simultáneamente una variable compartida sin la sincronización adecuada. Esto puede llevar a resultados inesperados e incorrectos.
 
 **Escenario de Ejemplo:**
 
@@ -33,14 +33,12 @@ func Depositar(amount int, wg *sync.WaitGroup, lock *sync.Mutex) {
 }
 ```
 
-- `lock.Lock()`: Antes de acceder a la variable compartida `balance`, la goroutine adquiere el bloqueo del mutex. Esto asegura que solo una goroutine pueda proceder a la vez.
-- `b := balance`: El valor del saldo actual se lee en una variable local `b`.
-- `balance = b + amount`: La cantidad del depósito se agrega al valor local `b` y el resultado se almacena de nuevo en `balance`.
+- `lock.Lock()`: Antes de acceder a la variable compartida `balance`, llamamos a la función lock de la libreria mutex, la gorutine lee esto y bloquea la sección del codigo que se encuentra antes del desbloqueo. Esto asegura que solo una goroutine pueda proceder a la vez.
 - `lock.Unlock()`: Después de la sección crítica (actualizando `balance`), se libera el bloqueo, lo que permite que otras goroutines lo adquieran.
 
 ### Prevención de Condiciones de Carrera
 
-Al adquirir el bloqueo mutex antes de acceder a `balance`, la función `Depositar` crea una sección crítica. Solo una goroutine puede tener el bloqueo a la vez, lo que garantiza que:
+Al poner el bloqueo mutex antes de acceder a `balance`, la función `Depositar` crea una sección crítica. Solo una goroutine puede tener el bloqueo a la vez, lo que garantiza que:
 
 - Ninguna otra goroutine puede modificar `balance` mientras la actual lo está leyendo o actualizando.
 - El valor leído de `balance` (almacenado en `b`) permanece constante durante la operación de depósito.
@@ -48,4 +46,4 @@ Al adquirir el bloqueo mutex antes de acceder a `balance`, la función `Deposita
 
 ### En Resumen
 
-El `sync.Mutex` en este código Go actúa como un guardián, asegurando que solo una goroutine pueda acceder y modificar la variable compartida `balance` a la vez. Esto evita las condiciones de carrera y garantiza actualizaciones consistentes del saldo, incluso en escenarios concurrentes.
+El `sync.Mutex` en este código Go actúa como un bloqueo, asegurando que solo una goroutine pueda acceder y modificar la variable compartida `balance` a la vez. Esto evita las condiciones de carrera y garantiza actualizaciones consistentes del saldo, incluso en escenarios concurrentes.

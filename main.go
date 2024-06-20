@@ -9,11 +9,11 @@ var (
 	balance int = 100
 )
 
-func Deposit(ammount int, wg *sync.WaitGroup, lock *sync.Mutex) {
+func Deposit(amount int, wg *sync.WaitGroup, lock *sync.Mutex) {
 	defer wg.Done()
 	lock.Lock()
 	b := balance
-	balance = b + ammount
+	balance = b + amount
 	lock.Unlock()
 }
 
