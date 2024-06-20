@@ -13,18 +13,18 @@ Imaginemos una cuenta bancaria con un saldo almacenado en la variable `balance`.
 
 ### Solución con `sync.Mutex`
 
-El código Go proporcionado previene efectivamente las condiciones de carrera utilizando un bloqueo `sync.Mutex` (exclusión mutua). Veamos cómo funciona:
+El código Go proporcionado previene efectivamente las condiciones de carrera utilizando un bloqueo `sync.RWMutex`. Veamos cómo funciona:
 
 #### Inicialización de Mutex
 
 ```go
-var lock sync.Mutex
+var lock sync.RWMutex
 ```
 
 #### Función `Depositar`
 
 ```go
-func Depositar(amount int, wg *sync.WaitGroup, lock *sync.Mutex) {
+func Depositar(amount int, wg *sync.WaitGroup, lock *sync.RWMutex) {
   defer wg.Done()
   lock.Lock()
   b := balance
@@ -33,7 +33,7 @@ func Depositar(amount int, wg *sync.WaitGroup, lock *sync.Mutex) {
 }
 ```
 
-- `lock.Lock()`: Antes de acceder a la variable compartida `balance`, llamamos a la función lock de la libreria mutex, la gorutine lee esto y bloquea la sección del codigo que se encuentra antes del desbloqueo. Esto asegura que solo una goroutine pueda proceder a la vez.
+- `lock.Lock()`: Antes de acceder a la variable compartida `balance`, llamamos a la función lock de la libreria RWmutex, la gorutine lee esto y bloquea la sección del codigo que se encuentra antes del desbloqueo. Esto asegura que solo una goroutine pueda proceder a la vez.
 - `lock.Unlock()`: Después de la sección crítica (actualizando `balance`), se libera el bloqueo, lo que permite que otras goroutines lo adquieran.
 
 ### Prevención de Condiciones de Carrera
